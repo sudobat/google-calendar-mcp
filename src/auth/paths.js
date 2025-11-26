@@ -10,9 +10,18 @@ import { homedir } from 'os';
 
 /**
  * Get the secure token storage path
- * Uses XDG Base Directory specification on Unix-like systems
+ * Priority order:
+ * 1. GOOGLE_CALENDAR_MCP_TOKEN_PATH environment variable (custom path)
+ * 2. XDG_CONFIG_HOME/google-calendar-mcp/tokens.json (XDG spec)
+ * 3. ~/.config/google-calendar-mcp/tokens.json (default)
  */
 export function getSecureTokenPath() {
+  // Priority 1: Explicit custom path from environment
+  if (process.env.GOOGLE_CALENDAR_MCP_TOKEN_PATH) {
+    return path.resolve(process.env.GOOGLE_CALENDAR_MCP_TOKEN_PATH);
+  }
+  
+  // Priority 2 & 3: XDG Base Directory specification or default
   const configDir = process.env.XDG_CONFIG_HOME || path.join(homedir(), '.config');
   return path.join(configDir, 'google-calendar-mcp', 'tokens.json');
 }
