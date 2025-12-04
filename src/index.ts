@@ -50,12 +50,16 @@ async function runAuthServer(): Promise<void> {
 
     if (!success && !authServerInstance.authCompletedSuccessfully) {
       // Failed to start and tokens weren't already valid
+      await authServerInstance.stop();
+
       process.stderr.write(
         "Authentication failed. Could not start server or validate existing tokens. Check port availability (3000-3004) and try again.\n"
       );
       process.exit(1);
     } else if (authServerInstance.authCompletedSuccessfully) {
       // Auth was successful (either existing tokens were valid or flow completed just now)
+      await authServerInstance.stop();
+
       process.stderr.write("Authentication successful.\n");
       process.exit(0); // Exit cleanly if auth is already done
     }
